@@ -6,6 +6,7 @@ export const config = {
     chains_to_track: ["solana"], // Chains that the hunter should track tokens for.
     dex_to_track: "raydium", // Dexs that the hunter should track tokens for.
     ignore_pump_fun: false,
+    min_boost_amount: 10,
   },
   bots: [
     {

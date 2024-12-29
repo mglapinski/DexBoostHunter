@@ -107,7 +107,7 @@ async function main() {
                 const x = await upsertTokenBoost(updatedTokenProfile);
 
                 // Confirm
-                if (x && !firstRun) {
+                if (x && !firstRun && token.totalAmount && config.settings.min_boost_amount <= token.totalAmount) {
                   // Check if Golden Ticker
                   let goldenTicker = "⚡";
                   let goldenTickerColor = chalk.bgGray;
@@ -183,8 +183,9 @@ async function main() {
                     });
                   }
                   console.log("[ Checkout Token ]");
-                  console.log(`👀 View on Dex https://dexscreener.com/${updatedTokenProfile.chainId}/${updatedTokenProfile.tokenAddress}.`);
-                  console.log(`🟣 Buy via Nova https://t.me/TradeonNovaBot?start=r-digitalbenjamins-${updatedTokenProfile.tokenAddress}.`);
+                  console.log(`👀 View on Dex https://dexscreener.com/${updatedTokenProfile.chainId}/${updatedTokenProfile.tokenAddress}`);
+                  console.log(`🟣 Buy via Nova https://t.me/TradeonNovaBot?start=r-digitalbenjamins-${updatedTokenProfile.tokenAddress}`);
+                  console.log(`👽 Buy via GMGN https://gmgn.ai/sol/token/${updatedTokenProfile.tokenAddress}`);
                 }
               }
             }
