@@ -24,6 +24,11 @@ export async function getEndpointData(url: string): Promise<false | any> {
 // Start requesting data
 let firstRun = true;
 async function main() {
+  // First run logic
+  if (firstRun) console.clear();
+  if (firstRun) console.log("Started. Waiting for tokens...");
+
+  // Get endpoints
   const endpoints = config.dex.endpoints || "";
 
   // Verify if endpoints are provided
@@ -164,8 +169,8 @@ async function main() {
                   const timeAgo = updatedTokenProfile.pairCreatedAt ? DateTime.fromMillis(updatedTokenProfile.pairCreatedAt).toRelative() : "N/A";
 
                   // Console Log
-                  console.log("[ Boost Information ]");
-                  console.log(`\n✅ ${updatedTokenProfile.amount} boosts added for ${updatedTokenProfile.tokenName} (${updatedTokenProfile.tokenSymbol}).`);
+                  console.log("\n\n[ Boost Information ]");
+                  console.log(`✅ ${updatedTokenProfile.amount} boosts added for ${updatedTokenProfile.tokenName} (${updatedTokenProfile.tokenSymbol}).`);
                   console.log(goldenTickerColor(`${goldenTicker} Boost Amount: ${updatedTokenProfile.totalAmount}`));
                   console.log("[ Token Information ]");
                   console.log(socialsColor(`${socialsIcon} This token has ${updatedTokenProfile.links.length} socials.`));
@@ -177,12 +182,12 @@ async function main() {
                   console.log(`💦 Current Liquidity: $${updatedTokenProfile.liquidity}`);
                   console.log(`🚀 Pumpfun token: ${pumpfunIcon} ${isPumpFun}`);
                   if (rugCheckResults.length !== 0) {
-                    console.log("[ Rugcheck Result ]");
+                    console.log("[ Rugcheck Result   ]");
                     rugCheckResults.forEach((risk) => {
                       console.log(risk);
                     });
                   }
-                  console.log("[ Checkout Token ]");
+                  console.log("[ Checkout Token    ]");
                   console.log(`👀 View on Dex https://dexscreener.com/${updatedTokenProfile.chainId}/${updatedTokenProfile.tokenAddress}`);
                   console.log(`🟣 Buy via Nova https://t.me/TradeonNovaBot?start=r-digitalbenjamins-${updatedTokenProfile.tokenAddress}`);
                   console.log(`👽 Buy via GMGN https://gmgn.ai/sol/token/${updatedTokenProfile.tokenAddress}`);
