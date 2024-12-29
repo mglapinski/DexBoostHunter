@@ -124,9 +124,11 @@ async function main() {
                   // Check socials
                   let socialsIcon = "🔴";
                   let socialsColor = chalk.bgGray;
+                  let socialLenght = 0;
                   if (updatedTokenProfile.links && updatedTokenProfile.links.length > 0) {
                     socialsIcon = "🟢";
                     socialsColor = chalk.greenBright;
+                    socialLenght = updatedTokenProfile.links.length;
                   }
 
                   // Handle pumpfun
@@ -173,7 +175,7 @@ async function main() {
                   console.log(`✅ ${updatedTokenProfile.amount} boosts added for ${updatedTokenProfile.tokenName} (${updatedTokenProfile.tokenSymbol}).`);
                   console.log(goldenTickerColor(`${goldenTicker} Boost Amount: ${updatedTokenProfile.totalAmount}`));
                   console.log("[ Token Information ]");
-                  console.log(socialsColor(`${socialsIcon} This token has ${updatedTokenProfile.links.length} socials.`));
+                  console.log(socialsColor(`${socialsIcon} This token has ${socialLenght} socials.`));
                   console.log(
                     `🕝 This token pair was created ${timeAgo} and has ${updatedTokenProfile.pairsAvailable} pairs available including ${updatedTokenProfile.dexPair}`
                   );
