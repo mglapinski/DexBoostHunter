@@ -93,7 +93,7 @@ async function main() {
                   links: token.links,
                   amount: token.amount,
                   totalAmount: token.totalAmount,
-                  pairsAvailable: detailedTokensData.pairs.length,
+                  pairsAvailable: detailedTokensData.pairs.length ? detailedTokensData.pairs.length : 0,
                   dexPair: config.settings.dex_to_track,
                   currentPrice: dexPair.priceUsd ? parseFloat(dexPair.priceUsd) : 0,
                   liquidity: dexPair.liquidity.usd ? dexPair.liquidity.usd : 0,
@@ -119,7 +119,7 @@ async function main() {
                   // Check socials
                   let socialsIcon = "🔴";
                   let socialsColor = chalk.bgGray;
-                  if (updatedTokenProfile.links.length > 0) {
+                  if (updatedTokenProfile.links && updatedTokenProfile.links.length > 0) {
                     socialsIcon = "🟢";
                     socialsColor = chalk.greenBright;
                   }
@@ -152,6 +152,11 @@ async function main() {
                           return `${icon} ${risk.name}: ${risk.description}`;
                         });
                       }
+                      // Add no risks
+                      if (rugRisks.length === 0) {
+                        const newRiskString = `🟢 No risks found`;
+                        rugCheckResults.push(newRiskString);
+                      }
                     }
                   }
 
@@ -159,8 +164,10 @@ async function main() {
                   const timeAgo = updatedTokenProfile.pairCreatedAt ? DateTime.fromMillis(updatedTokenProfile.pairCreatedAt).toRelative() : "N/A";
 
                   // Console Log
+                  console.log("[ Boost Information ]");
                   console.log(`\n✅ ${updatedTokenProfile.amount} boosts added for ${updatedTokenProfile.tokenName} (${updatedTokenProfile.tokenSymbol}).`);
                   console.log(goldenTickerColor(`${goldenTicker} Boost Amount: ${updatedTokenProfile.totalAmount}`));
+                  console.log("[ Token Information ]");
                   console.log(socialsColor(`${socialsIcon} This token has ${updatedTokenProfile.links.length} socials.`));
                   console.log(
                     `🕝 This token pair was created ${timeAgo} and has ${updatedTokenProfile.pairsAvailable} pairs available including ${updatedTokenProfile.dexPair}`
@@ -169,9 +176,15 @@ async function main() {
                   console.log(`📦 Current Mkt Cap: $${updatedTokenProfile.marketCap}`);
                   console.log(`💦 Current Liquidity: $${updatedTokenProfile.liquidity}`);
                   console.log(`🚀 Pumpfun token: ${pumpfunIcon} ${isPumpFun}`);
+                  if (rugCheckResults.length !== 0) {
+                    console.log("[ Rugcheck Result ]");
+                    rugCheckResults.forEach((risk) => {
+                      console.log(risk);
+                    });
+                  }
+                  console.log("[ Checkout Token ]");
                   console.log(`👀 View on Dex https://dexscreener.com/${updatedTokenProfile.chainId}/${updatedTokenProfile.tokenAddress}.`);
                   console.log(`🟣 Buy via Nova https://t.me/TradeonNovaBot?start=r-digitalbenjamins-${updatedTokenProfile.tokenAddress}.`);
-                  console.log(rugCheckResults);
                 }
               }
             }
