@@ -2,9 +2,10 @@ import dotenv from "dotenv"; // zero-dependency module that loads environment va
 import axios from "axios";
 import { DateTime } from "luxon";
 import { config } from "./config"; // Configuration parameters for our hunter
-import { TokenResponseType, detailedTokenResponseType, dexEndpoint, updatedDetailedTokenType } from "./types";
+import { RugResponse, TokenResponseType, detailedTokenResponseType, dexEndpoint, updatedDetailedTokenType } from "./types";
 import { selectTokenBoostAmounts, upsertTokenBoost } from "./db";
 import chalk from "chalk";
+import { getRugCheck } from "./transactions";
 
 // Load environment variables from the .env file
 dotenv.config();
@@ -55,6 +56,9 @@ async function main() {
             for (const token of tokensData) {
               // Verify chain
               if (!chains.includes(token.chainId.toLowerCase())) continue;
+
+              // Handle Exceptions
+              if (token.tokenAddress.trim().toLowerCase().endsWith("pump") && config.settings.ignore_pump_fun) continue;
 
               // Get the current boost amounts for this token
               const returnedAmounts = await selectTokenBoostAmounts(token.tokenAddress);
@@ -120,10 +124,41 @@ async function main() {
                     socialsColor = chalk.greenBright;
                   }
 
+                  // Handle pumpfun
+                  let pumpfunIcon = "🔴";
+                  let isPumpFun = "No";
+                  if (updatedTokenProfile.tokenAddress.trim().toLowerCase().endsWith("pump")) {
+                    pumpfunIcon = "🟢";
+                    isPumpFun = "Yes";
+                  }
+
+                  // Handle Rugcheck
+                  let rugCheckResults: string[] = [];
+                  if (config.rug_check.enabled) {
+                    const res = await getRugCheck(updatedTokenProfile.tokenAddress);
+                    if (res) {
+                      const rugResults: RugResponse = res;
+                      const rugRisks = rugResults.risks;
+
+                      // Add risks
+                      if (rugRisks.length !== 0) {
+                        const dangerLevelIcons = {
+                          danger: "🔴",
+                          warn: "🟡",
+                        };
+
+                        rugCheckResults = rugRisks.map((risk) => {
+                          const icon = dangerLevelIcons[risk.level as keyof typeof dangerLevelIcons] || "⚪"; // Default to white circle if no match
+                          return `${icon} ${risk.name}: ${risk.description}`;
+                        });
+                      }
+                    }
+                  }
+
                   // Check age
                   const timeAgo = updatedTokenProfile.pairCreatedAt ? DateTime.fromMillis(updatedTokenProfile.pairCreatedAt).toRelative() : "N/A";
 
-                  // Perform Righ
+                  // Console Log
                   console.log(`\n✅ ${updatedTokenProfile.amount} boosts added for ${updatedTokenProfile.tokenName} (${updatedTokenProfile.tokenSymbol}).`);
                   console.log(goldenTickerColor(`${goldenTicker} Boost Amount: ${updatedTokenProfile.totalAmount}`));
                   console.log(socialsColor(`${socialsIcon} This token has ${updatedTokenProfile.links.length} socials.`));
@@ -133,8 +168,10 @@ async function main() {
                   console.log(`🤑 Current Price: $${updatedTokenProfile.currentPrice}`);
                   console.log(`📦 Current Mkt Cap: $${updatedTokenProfile.marketCap}`);
                   console.log(`💦 Current Liquidity: $${updatedTokenProfile.liquidity}`);
+                  console.log(`🚀 Pumpfun token: ${pumpfunIcon} ${isPumpFun}`);
                   console.log(`👀 View on Dex https://dexscreener.com/${updatedTokenProfile.chainId}/${updatedTokenProfile.tokenAddress}.`);
                   console.log(`🟣 Buy via Nova https://t.me/TradeonNovaBot?start=r-digitalbenjamins-${updatedTokenProfile.tokenAddress}.`);
+                  console.log(rugCheckResults);
                 }
               }
             }

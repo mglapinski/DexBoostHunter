@@ -104,3 +104,15 @@ export interface updatedDetailedTokenType {
   tokenName: string;
   tokenSymbol: string;
 }
+export interface RugResponse {
+  tokenProgram: string;
+  tokenType: string;
+  risks: Array<{
+    name: string;
+    value: string;
+    description: string;
+    score: number;
+    level: string;
+  }>;
+  score: number;
+}
