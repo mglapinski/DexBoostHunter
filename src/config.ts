@@ -22,18 +22,8 @@ export const config = {
     endpoints: [
       {
         platform: "dexscreener",
-        name: "profiles",
-        url: "https://api.dexscreener.com/token-profiles/latest/v1",
-      },
-      {
-        platform: "dexscreener",
         name: "boosts-latest",
         url: "https://api.dexscreener.com/token-boosts/latest/v1",
-      },
-      {
-        platform: "dexscreener",
-        name: "boosts-top",
-        url: "https://api.dexscreener.com/token-boosts/top/v1",
       },
       {
         platform: "dexscreener",
